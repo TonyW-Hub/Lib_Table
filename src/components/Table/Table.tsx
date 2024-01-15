@@ -1,73 +1,73 @@
-import React, { PropsWithChildren, useRef, useState } from "react";
-import Styles from "./Table.module.scss";
+import React, { PropsWithChildren, useRef, useState } from "react"
+import Styles from "./Table.module.scss"
 
 export type ColumnType<T> = {
-  key: string;
-  title: string;
-  dataIndex?: string | undefined;
-  render?: (text: string, record: T) => React.ReactNode;
-};
+  key: string
+  title: string
+  dataIndex?: string | undefined
+  render?: (text: string, record: T) => React.ReactNode
+}
 
 type TableProps = {
-  dataSource: readonly any[];
-  columns: ColumnType<any>[];
-  search?: boolean;
-};
+  dataSource: readonly any[]
+  columns: ColumnType<any>[]
+  search?: boolean
+}
 
 export const Table = ({
   dataSource,
   columns,
   search = false,
 }: PropsWithChildren<TableProps>) => {
-  const containerRef = useRef<HTMLDivElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null)
 
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragStartX, setDragStartX] = useState(0);
+  const [isDragging, setIsDragging] = useState(false)
+  const [dragStartX, setDragStartX] = useState(0)
 
-  const [currentData, setCurrentData] = useState(dataSource);
+  const [currentData, setCurrentData] = useState(dataSource)
 
-  const [searchContent, setSearchContent] = useState<string>("");
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [entriesPerPage, setEntriesPerPage] = useState<number>(10);
+  const [searchContent, setSearchContent] = useState<string>("")
+  const [currentPage, setCurrentPage] = useState<number>(1)
+  const [entriesPerPage, setEntriesPerPage] = useState<number>(10)
 
-  const [openSortedModal, setOpenSortedModal] = useState<string | null>(null);
+  const [openSortedModal, setOpenSortedModal] = useState<string | null>(null)
 
-  const totalPages = Math.ceil(dataSource.length / entriesPerPage);
+  const totalPages = Math.ceil(dataSource.length / entriesPerPage)
 
   const handleMouseDown = (e: MouseEvent) => {
-    setIsDragging(true);
-    setDragStartX(e.clientX);
-  };
+    setIsDragging(true)
+    setDragStartX(e.clientX)
+  }
 
   const handleMouseUp = () => {
-    setIsDragging(false);
-  };
+    setIsDragging(false)
+  }
 
   const handleMouseMove = (e: MouseEvent) => {
-    if (!isDragging) return;
+    if (!isDragging) return
 
-    const deltaX = e.clientX - dragStartX;
+    const deltaX = e.clientX - dragStartX
 
     if (containerRef.current) {
-      containerRef.current.scrollLeft -= deltaX;
+      containerRef.current.scrollLeft -= deltaX
     }
 
-    setDragStartX(e.clientX);
-  };
+    setDragStartX(e.clientX)
+  }
 
   const calcMinWidthTable = () => {
-    let width = columns.length * 100;
+    const width = columns.length * 100
 
-    return width + "px";
-  };
+    return width + "px"
+  }
 
   const filterBySearch = () => {
     const filter = dataSource.filter((record) => {
       const find = Object.values(record).find((el: any) =>
-        el?.toLowerCase()?.includes(searchContent.toLowerCase())
-      );
-      return find;
-    });
+        el?.toLowerCase()?.includes(searchContent.toLowerCase()),
+      )
+      return find
+    })
 
     if (filter.length > 0) {
       return filter.map((record, index) => (
@@ -80,58 +80,58 @@ export const Table = ({
             </td>
           ))}
         </tr>
-      ));
+      ))
     } else {
       return (
         <tr>
           <td colSpan={columns.length}>Employee not found</td>
         </tr>
-      );
+      )
     }
-  };
+  }
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
+    setCurrentPage(page)
+  }
 
   const handleEntriesChange = (value: number) => {
-    setEntriesPerPage(value);
-    setCurrentPage(1);
-  };
+    setEntriesPerPage(value)
+    setCurrentPage(1)
+  }
 
   const updateSortedModalState = (columnKey: string) => {
     if (openSortedModal === columnKey) {
-      setOpenSortedModal(null);
-      return;
+      setOpenSortedModal(null)
+      return
     }
-    setOpenSortedModal(columnKey);
-  };
+    setOpenSortedModal(columnKey)
+  }
 
   const handleSortTable = (
     currentColumn: ColumnType<any>,
-    order?: "asc" | "desc" | null
+    order?: "asc" | "desc" | null,
   ) => {
-    if (!currentColumn) return;
+    if (!currentColumn) return
 
     if (order === null) {
-      setCurrentData(dataSource);
-      return;
+      setCurrentData(dataSource)
+      return
     }
 
     const sortedData = dataSource.slice().sort((a, b) => {
-      const aValue = a[currentColumn.dataIndex || ""] || "";
-      const bValue = b[currentColumn.dataIndex || ""] || "";
+      const aValue = a[currentColumn.dataIndex || ""] || ""
+      const bValue = b[currentColumn.dataIndex || ""] || ""
 
       if (order === "asc") {
-        return aValue.localeCompare(bValue);
+        return aValue.localeCompare(bValue)
       } else if (order === "desc") {
-        return bValue.localeCompare(aValue);
+        return bValue.localeCompare(aValue)
       } else {
-        return 0;
+        return 0
       }
-    });
+    })
 
-    setCurrentData(sortedData);
+    setCurrentData(sortedData)
 
     return sortedData.map((record, index) => (
       <tr key={"record" + index}>
@@ -143,12 +143,12 @@ export const Table = ({
           </td>
         ))}
       </tr>
-    ));
-  };
+    ))
+  }
 
-  const indexOfLastEntry = currentPage * entriesPerPage;
-  const indexOfFirstEntry = indexOfLastEntry - entriesPerPage;
-  const currentEntries = currentData.slice(indexOfFirstEntry, indexOfLastEntry);
+  const indexOfLastEntry = currentPage * entriesPerPage
+  const indexOfFirstEntry = indexOfLastEntry - entriesPerPage
+  const currentEntries = currentData.slice(indexOfFirstEntry, indexOfLastEntry)
 
   return (
     <>
@@ -176,7 +176,7 @@ export const Table = ({
               className={Styles.inputSearch}
               placeholder="Search employee..."
               onChange={(e) => {
-                setSearchContent(e.currentTarget.value);
+                setSearchContent(e.currentTarget.value)
               }}
             />
           </div>
@@ -187,7 +187,7 @@ export const Table = ({
             name="showEntries"
             id="showEntries"
             onChange={(e) => {
-              handleEntriesChange(parseInt(e.currentTarget.value));
+              handleEntriesChange(parseInt(e.currentTarget.value))
             }}
             className={Styles.selectEntries}
           >
@@ -204,11 +204,11 @@ export const Table = ({
         className={Styles.containerTable}
         ref={containerRef}
         onMouseDown={(e: any) => {
-          handleMouseDown(e);
+          handleMouseDown(e)
         }}
         onMouseUp={handleMouseUp}
         onMouseMove={(e: any) => {
-          handleMouseMove(e);
+          handleMouseMove(e)
         }}
       >
         <table
@@ -263,7 +263,7 @@ export const Table = ({
                         {column.render && record
                           ? column.render(
                               record[column?.dataIndex || 0],
-                              record
+                              record,
                             )
                           : record[column.dataIndex || 0]}
                       </td>
@@ -287,8 +287,8 @@ export const Table = ({
         <div className={Styles.paginationControls}>
           <button
             onClick={() => {
-              if (currentPage === 1) return;
-              handlePageChange(Math.max(1, currentPage - 1));
+              if (currentPage === 1) return
+              handlePageChange(Math.max(1, currentPage - 1))
             }}
             disabled={currentPage === 1}
             className={Styles.btnControl}
@@ -307,8 +307,8 @@ export const Table = ({
           ))}
           <button
             onClick={() => {
-              if (currentPage === totalPages) return;
-              handlePageChange(currentPage + 1);
+              if (currentPage === totalPages) return
+              handlePageChange(currentPage + 1)
             }}
             disabled={currentPage === totalPages}
             className={Styles.btnControl}
@@ -318,8 +318,8 @@ export const Table = ({
         </div>
       </div>
     </>
-  );
-};
+  )
+}
 
 const SortedMenuModal = ({
   sortedTable,
@@ -328,15 +328,15 @@ const SortedMenuModal = ({
 }: {
   sortedTable: (
     currentColumn: ColumnType<any>,
-    order?: "asc" | "desc" | null
-  ) => void;
-  currentColumn: ColumnType<any>;
-  updateModalState: (colmunKey: string) => void;
+    order?: "asc" | "desc" | null,
+  ) => void
+  currentColumn: ColumnType<any>
+  updateModalState: (colmunKey: string) => void
 }) => {
   const handleClick = (order: "asc" | "desc" | null) => {
-    sortedTable(currentColumn, order);
-    updateModalState(currentColumn.key);
-  };
+    sortedTable(currentColumn, order)
+    updateModalState(currentColumn.key)
+  }
 
   return (
     <div className={Styles.sortredMenu} onClick={(e) => e.stopPropagation()}>
@@ -347,5 +347,5 @@ const SortedMenuModal = ({
         <li onClick={() => handleClick("desc")}>descending</li>
       </ul>
     </div>
-  );
-};
+  )
+}
