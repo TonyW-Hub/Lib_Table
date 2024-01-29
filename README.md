@@ -32,7 +32,6 @@ import { Table, ColumnType } from "fluid-table-react";
 You can then render the `Table` component like any other React component in JSX.
 Use `ColumnType` for typing your data.
 
-
 ## Example
 
 ```js
