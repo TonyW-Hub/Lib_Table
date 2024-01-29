@@ -58,7 +58,7 @@ const columns: ColumnType<Employee>[] = [
 export const EmployeesListPage = (
   props: PropsWithChildren<EmployeesListPageProps>,
 ) => {
-  const employees = [
+    const employees = [
     {
         key: "1",
         firstName: "John",
@@ -69,7 +69,7 @@ export const EmployeesListPage = (
         firstName: "Ned",
         lastName: "Stark"
     }
-  ]
+    ]
 
     return <Table dataSource={employees} columns={columns} search />
 }
