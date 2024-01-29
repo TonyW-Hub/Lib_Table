@@ -64,7 +64,7 @@ export const EmployeesListPage = (
         lastName: "Doe"
     },
     {
-        key: "1",
+        key: "2",
         firstName: "Ned",
         lastName: "Stark"
     }
